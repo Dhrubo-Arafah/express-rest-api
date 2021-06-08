@@ -24,10 +24,10 @@ app.post('/api/students', (req, res) => {
 
   db.getDBStudents()
     .then(students => {
-    students.push(student);
+      students.push(student);
       db.insertDBStudent(students)
-      .then(data=>res.send(student))
-  });
+        .then(data => res.send(student))
+    });
 });
 
 //Making Get request for a single student
@@ -38,8 +38,27 @@ app.get('/api/students/:id', (req, res) => {
       const student = students.find(std => std.id === id);
       if (!student) res.status(404).send("No Student Found With This ID");
       else res.send(student);
-  })
+    })
 })
+
+
+//Making Put Request
+app.put('/api/students/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const updatedData = req.body;
+  db.getDBStudents()
+    .then(students => {
+      const student = students.find(student => student.id === id)
+      if (!student) res.status(404).send("No student Found With This ID")
+      else {
+        const index = students.findIndex(student => student.id === id);
+        students[index] = updatedData;
+        db.insertDBStudent(students)
+          .then(msg => res.send(updatedData)
+          )
+      }
+    })
+});
 
 //Creating Listener
 app.listen(port, () => {
