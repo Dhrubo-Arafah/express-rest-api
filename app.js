@@ -2,7 +2,11 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
-const db = require('./db')
+const { newStudent } = require('./actions/newStudent');
+const { studentDelete } = require('./actions/studentDelete');
+const { studentDetail } = require('./actions/studentDetail');
+const { studentList } = require('./actions/studentList');
+const { updatedStudents } = require('./actions/updatedStudent');
 app.use(express.json());
 
 //Assigning Port
@@ -13,64 +17,19 @@ app.get('/', (req, res) => {
   res.send("Hello from express.js!")
 })
 
-app.get('/api/students', (req, res) => {
-  db.getDBStudents()
-    .then(students => res.send(students))
-});
+app.get('/api/students', studentList);
 
 //Making Post Request
-app.post('/api/students', (req, res) => {
-  const student = req.body;
-
-  db.getDBStudents()
-    .then(students => {
-      students.push(student);
-      db.insertDBStudent(students)
-        .then(data => res.send(student))
-    });
-});
+app.post('/api/students', newStudent);
 
 //Making Get request for a single student
-app.get('/api/students/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  db.getDBStudents()
-    .then(students => {
-      const student = students.find(std => std.id === id);
-      if (!student) res.status(404).send("No Student Found With This ID");
-      else res.send(student);
-    })
-})
-
+app.get('/api/students/:id', studentDetail)
 
 //Making Put Request
-app.put('/api/students/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const updatedData = req.body;
-  db.getDBStudents()
-    .then(students => {
-      const student = students.find(student => student.id === id)
-      if (!student) res.status(404).send("No student Found With This ID")
-      else {
-        const index = students.findIndex(student => student.id === id);
-        students[index] = updatedData;
-        db.insertDBStudent(students)
-          .then(msg => res.send(updatedData)
-          )
-      }
-    })
-});
+app.put('/api/students/:id', updatedStudents);
 
 //Making Delete Request
-app.delete('/api/students/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  db.getDBStudents().then(students => {
-    const student = students.find(student => student.id === id);
-    if (!student) res.status(404).send("No Student Found With this ID");
-    const updatedStudents = students.filter(student => student.id !== id);
-    db.insertDBStudent(updatedStudents)
-    .then(msg=>res.send(updatedStudents))
-  })
-})
+app.delete('/api/students/:id', studentDelete)
 
 //Creating Listener
 app.listen(port, () => {
