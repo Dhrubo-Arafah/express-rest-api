@@ -1,13 +1,14 @@
-const db = require('../../db')
+const { Student } = require('../../models/students');
 
-const studentDetail = (req, res) => {
-  const id = parseInt(req.params.id);
-  db.getDBStudents()
-    .then(students => {
-      const student = students.find(std => std.id === id);
-      if (!student) res.status(404).send("No Student Found With This ID");
-      else res.send(student);
-    })
+const studentDetail = async(req, res) => {
+  const id = req.params.id;
+  try {
+    const student = await Student.findById(id)
+    if (!student) return res.status(404).send('ID is not found!');
+    res.send(student)
+  } catch (err) {
+    return res.status(404).send('ID is not found!');
+ }
 }
 
 module.exports.studentDetail = studentDetail;

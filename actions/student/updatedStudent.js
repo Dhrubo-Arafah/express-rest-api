@@ -1,20 +1,15 @@
-const db = require('../../db')
+const { Student } = require("../../models/students");
 
-const updatedStudents = (req, res) => {
-  const id = parseInt(req.params.id);
+const updatedStudents = async(req, res) => {
+  const id = req.params.id;
   const updatedData = req.body;
-  db.getDBStudents()
-    .then(students => {
-      const student = students.find(student => student.id === id)
-      if (!student) res.status(404).send("No student Found With This ID")
-      else {
-        const index = students.findIndex(student => student.id === id);
-        students[index] = updatedData;
-        db.insertDBStudent(students)
-          .then(msg => res.send(updatedData)
-          )
-      }
-    })
+  try {
+    const student = await Student.findByIdAndUpdate(id, updatedData, { new: true, useFindAndModify: false });
+    if (!student) return res.status(404).send('ID is not found!');
+    res.send(student);
+  } catch {
+    return res.status(404).send('ID is not found!');
+  }
 }
 
 module.exports.updatedStudents = updatedStudents;
