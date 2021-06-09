@@ -1,4 +1,4 @@
-const db = require('../db')
+const db = require('../../db')
 
 const studentList = (req, res) => db.getDBStudents()
   .then(students => res.send(students));

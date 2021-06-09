@@ -1,4 +1,4 @@
-const db = require('../db')
+const db = require('../../db')
 
 const updatedStudents = (req, res) => {
   const id = parseInt(req.params.id);
