@@ -1,13 +1,17 @@
-const db = require('../../db')
+const { Student } = require('../../models/students')
 
-const newStudent = (req, res) => {
-  const student = req.body;
-  db.getDBStudents()
-    .then(students => {
-      students.push(student);
-      db.insertDBStudent(students)
-        .then(data => res.send(student))
-    });
+const newStudent = async (req, res) => {
+  const student = new Student(req.body)
+  try{
+    const result = await student.save();
+    res.send(result);
+  } catch (err) {
+    const errMsgs = [];
+    for (field in err.errors) {
+      errMsgs.push(err.errors[field].message);
+    }
+    return res.status(400).send(errMsg);
+  }
 }
 
 module.exports.newStudent = newStudent;

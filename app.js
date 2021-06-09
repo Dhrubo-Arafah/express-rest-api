@@ -3,11 +3,17 @@ const express = require('express');
 const studentRouter = require('./routers/studentRouter')
 const morgan = require('morgan')
 const app = express();
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/my-student-2', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log("Connected To MongoDB!"))
+  .catch(err => console.error("MongoDB Connection Failed!"));
 
 //Defining Built-in Middlewares
 app.use(express.json()); //POST/PUT/PATCH -> JSON Object -> Req
-app.use(express.urlencoded({ extended: true })); // id=1&&name=something
-app.use(express.static('public')); //Handle Static File
 app.use('/api/students', studentRouter);
 
 //Defining Custom Middleware
@@ -31,3 +37,7 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+//Mongoose -> Model -> Collection
+//Import Model
+//Connect Database
